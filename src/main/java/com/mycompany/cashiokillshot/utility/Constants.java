@@ -11,6 +11,7 @@ public class Constants {
     public static final int FAILURE_STATUS_CODE = 199;
     public static final int SUCCESS_STATUS_CODE = 200;
     public static final String ERROR="error";
+    public static final String LAST_RECORD_ID_KEY="lastRecordId";
     public static final String ERROR_LOG_TEMPLATE="{}=> {} | {}";
     public static final String SHA_256_HASH_ALGORITHM = "SHA-256";
     public static final String USERNAME_KEY = "username";

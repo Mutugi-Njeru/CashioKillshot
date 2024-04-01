@@ -20,7 +20,7 @@ public class Engine {
     @Inject
     private Instance<ServiceRule>rules;
 
-    public JSONObject init(JSONObject request, String requestType, String bearerToken){
+    public JSONObject init(JSONObject request, String requestType, String bearerToken ){
 
         Token tokenDetails=authorizeUser(requestType,bearerToken);
 

@@ -17,8 +17,6 @@ public class UserService {
     UserCategoriesDao userCategoriesDao;
     @Inject
     UserDao userDao;
-    @Inject
-    BeanValidatorService beanValidatorService;
 
     public ServiceResponder addUserCategory(JSONObject object){
         String category= object.optString("userCategory", Constants.EMPTY_STRING);
@@ -39,9 +37,26 @@ public class UserService {
 
     public ServiceResponder createUser(UserSignupRequest user){
         int userId= userDao.createUser(user);
-        return (userId>0)
-                ?new ServiceResponder(true, "user created successfully")
-                :new ServiceResponder(false, "cannot create user");
 
+        if (userId>0){
+            boolean isSaved= userDao.saveUserDetails(user, userId);
+            return (isSaved)
+                    ?new ServiceResponder(true, "user created successfully")
+                    :new ServiceResponder(false, "unable to create user");
+        }
+        else {
+            return  new ServiceResponder(false, "cannot create user");
+        }
+    }
+
+    public ServiceResponder getUsers(JSONObject object){
+        int firmId= object.optInt(Constants.FIRM_ID_KEY, 0);
+        int lastRecordId= object.optInt(Constants.LAST_RECORD_ID_KEY, 0);
+
+        JSONObject users=userDao.getUsers(firmId, lastRecordId);
+
+        return (!users.isEmpty())
+                ?new ServiceResponder(true, users)
+                :new ServiceResponder(false, "users not found");
     }
 }

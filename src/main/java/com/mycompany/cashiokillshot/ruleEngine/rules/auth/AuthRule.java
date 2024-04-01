@@ -19,7 +19,6 @@ public class AuthRule implements ServiceRule {
     @Override
     public boolean matches(Object input) {
         return (input.toString().equalsIgnoreCase(RequestTypes.AUTHENTICATE.name()));
-
     }
 
     @Override

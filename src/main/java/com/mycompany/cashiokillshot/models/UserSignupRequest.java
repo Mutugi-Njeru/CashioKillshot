@@ -28,7 +28,7 @@ public class UserSignupRequest {
 
     public UserSignupRequest(JSONObject object){
          firmId= object.optInt("firmId", 0);
-         firstName= object.optString("fistName", Constants.EMPTY_STRING);
+         firstName= object.optString("firstName", Constants.EMPTY_STRING);
          lastName= object.optString("lastName", Constants.EMPTY_STRING);
          msisdn= object.optString("msisdn", Constants.EMPTY_STRING);
          email= object.optString("email", Constants.EMPTY_STRING);

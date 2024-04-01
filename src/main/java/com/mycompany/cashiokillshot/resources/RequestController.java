@@ -47,7 +47,7 @@ public class RequestController {
     @POST
     @Path("/request")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response doSomething(InputStream inputStream, @HeaderParam(HttpHeaders.AUTHORIZATION) String bearerToken)
+    public Response doSomething(InputStream inputStream, @HeaderParam(HttpHeaders.AUTHORIZATION) String bearerToken )
     {
 
         try
@@ -59,7 +59,7 @@ public class RequestController {
 
             JSONObject request = (object.has(Constants.DATA_KEY)) ? object.getJSONObject(Constants.DATA_KEY) : new JSONObject();
             String requestType = object.optString(Constants.REQUEST_TYPE_KEY, Constants.EMPTY_STRING);
-            JSONObject response = engine.init(request, requestType, bearerToken);
+            JSONObject response = engine.init(request, requestType, bearerToken); 
             logger.info("REQUEST RESPONSE=> {}", response);
 
             return Response.ok()

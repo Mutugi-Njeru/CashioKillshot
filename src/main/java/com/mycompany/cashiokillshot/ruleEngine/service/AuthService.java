@@ -19,15 +19,18 @@ public class AuthService {
     AuthenticationDao authenticationDao;
     @Inject
     JwtService jwtService;
+    @Inject
+    Sha256Hasher sha256Hasher;
 
     private  static final Logger logger= LogManager.getLogger(AuthService.class);
 
     public ServiceResponder authenticateUser(JSONObject object){
         String username= object.optString(Constants.USERNAME_KEY, Constants.EMPTY_STRING);
         String password= object.optString(Constants.PASSWORD_KEY, Constants.EMPTY_STRING);
+        String hashPassword=sha256Hasher.createHashText(password);
         //to add hashed password
 
-        Authentication authentication=authenticationDao.authenticateUser(username, password);
+        Authentication authentication=authenticationDao.authenticateUser(username, hashPassword);
 
         if (authentication.isAuthenticated()){
             String accessToken=generateAccessToken(authentication);
