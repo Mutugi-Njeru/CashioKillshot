@@ -86,4 +86,14 @@ public class FirmService {
                 ?new ServiceResponder(true, firms)
                 :new ServiceResponder(false, "invalid lastRecordId");
     }
+
+    public ServiceResponder getFirmWithAdminDetails(JSONObject object){
+        int firmId= object.optInt("firmId", 0);
+        int adminUserCategoryId= object.optInt("adminUserId", 0);
+
+        JSONObject response=firmsDao.getFirmWithAdminDetails(firmId, adminUserCategoryId);
+        return (!response.isEmpty())
+                ?new ServiceResponder(true, response)
+                :new ServiceResponder(false, "failed to fetch firm");
+    }
 }

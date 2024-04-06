@@ -165,5 +165,63 @@ public class FirmsDao {
         return  new JSONObject().put("firms", firms);
     }
 
+    public JSONObject getFirmWithAdminDetails(int firmId, int adminUserCategoryId){
+        JSONObject firmWithAdminDetails=new JSONObject();
+        JSONArray adminUsersArray = new JSONArray();
+        String query= """
+                SELECT f.firm_id, f.business_name, f.business_nature, f.registration_pin, f.kra_pin, f.auto_dispatch_advance, f.advance_interest_rate,
+                fc.location, fc.email, fc.primary_msisdn, fc.secondary_msisdn, fc.postal_address,\s
+                f.is_active, fdp.firm_deduction_plan_id, fdp.deduction_plan_id, fdp.firm_id, fdp.is_active, u.user_id,\s
+                u.username, ud.first_name, ud.last_name, ud.msisdn, ud.email\s
+                FROM firms f\s
+                JOIN firms_contact fc ON f.firm_id = fc.firm_id\s
+                JOIN firm_deduction_plans fdp ON f.firm_id = fdp.firm_id\s
+                JOIN users u ON f.firm_id = u.firm_id\s
+                JOIN users_details ud ON u.user_id = ud.user_id\s
+                WHERE f.firm_id = ? AND u.user_category_id = ?
+                """;
+
+        try (Connection connection= mysqlConnector.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query)){
+            preparedStatement.setInt(1, firmId);
+            preparedStatement.setInt(2, adminUserCategoryId);
+            ResultSet resultSet= preparedStatement.executeQuery();
+
+            while (resultSet.next()){
+                firmWithAdminDetails.put("firmId", resultSet.getInt(1))
+                        .put("businessName", resultSet.getString(2))
+                        .put("businessNature", resultSet.getString(3))
+                        .put("registrationPin", resultSet.getString(4))
+                        .put("kraPin", resultSet.getString(5))
+                        .put("autoDispatchAdvance", resultSet.getString(6))
+                        .put("salaryLoanInterest",resultSet.getInt(7) )
+                        .put("contacts", new JSONObject().put("location", resultSet.getString(8))
+                                .put("email", resultSet.getString(9))
+                                .put("primaryMsisdn", resultSet.getString(10))
+                                .put("secondaryMsisdn", resultSet.getString(11))
+                                .put("postalAddress", resultSet.getString(12)))
+                        .put("isActive", resultSet.getString(13))
+                        .put("firmDeductionPlanDetails", new JSONObject().put("firmDeductionPlanId", resultSet.getInt(14))
+                                .put("deductionPlanId", resultSet.getInt(15))
+                                .put("firmId", resultSet.getInt(16))
+                                .put("isActive", resultSet.getString(17)));
+
+                JSONObject adminUser=new JSONObject().put("userId", resultSet.getInt(18))
+                        .put("username", resultSet.getString(19))
+                        .put("firstName", resultSet.getString(20))
+                        .put("lastName", resultSet.getString(21))
+                        .put("msisdn", resultSet.getString(22))
+                        .put("email", resultSet.getString(23));
+
+                adminUsersArray.put(adminUser);
+                firmWithAdminDetails.put("adminUsers", adminUsersArray);
+            }
+
+        } catch (SQLException ex) {
+            logger.error(Constants.ERROR_LOG_TEMPLATE, Constants.ERROR, ex.getClass().getSimpleName(), ex.getMessage());
+        }
+        return firmWithAdminDetails;
+    }
+
+
 
 }

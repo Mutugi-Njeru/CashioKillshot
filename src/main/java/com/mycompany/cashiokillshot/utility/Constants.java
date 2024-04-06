@@ -15,6 +15,8 @@ public class Constants {
     public static final String ERROR_LOG_TEMPLATE="{}=> {} | {}";
     public static final String SHA_256_HASH_ALGORITHM = "SHA-256";
     public static final String USERNAME_KEY = "username";
+    public static final String USERID_KEY = "userId";
+    public static final String FIRM_USERID_KEY = "firmUserId";
     public static final String PASSWORD_KEY = "password";
     public static final String ACCESS_TOKEN_KEY = "token";
     public static final String TYPE_KEY = "type";

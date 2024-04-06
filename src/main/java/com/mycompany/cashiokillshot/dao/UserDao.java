@@ -70,10 +70,12 @@ public class UserDao {
 
     public User getUser(int userId){
         JSONObject object=new JSONObject();
-        String query="SELECT u.user_id, u.firm_id, u.user_category_id, ud.first_name, ud.last_name, ud.msisdn, ud.email \n" +
+        String query="""
+                     SELECT u.user_id, u.firm_id, u.user_category_id, ud.first_name, ud.last_name, ud.msisdn, ud.email \n" +
                 "FROM users u \n" +
                 "inner join  users_details ud on u.user_id=ud.user_id\n" +
-                "WHERE u.user_id=?";
+                "WHERE u.user_id=?
+                     """;
 
         try (Connection connection= mysqlConnector.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query)){
             preparedStatement.setInt(1, userId);
@@ -130,6 +132,50 @@ public class UserDao {
         }
         return new JSONObject().put("users", result);
     }
+    public boolean updateUerStatus(String isActive, int firmUserId){
+        String query="UPDATE users SET is_active=? WHERE user_id=? LIMIT 1";
+        boolean status=false;
 
+        try (Connection connection= mysqlConnector.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query)){
+            preparedStatement.setString(1, isActive);
+            preparedStatement.setInt(2, firmUserId);
+            status=preparedStatement.executeUpdate()>0;
 
+        } catch (SQLException ex) {
+            logger.error(Constants.ERROR_LOG_TEMPLATE, Constants.ERROR, ex.getClass().getSimpleName(), ex.getMessage());
+            return status;
+        }
+        return status;
+    }
+
+    public boolean deleteUser(int firmUserId){
+        String query="DELETE FROM users WHERE user_id=? LIMIT 1";
+        boolean status=false;
+
+        try(Connection connection= mysqlConnector.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, firmUserId);
+            status=preparedStatement.executeUpdate()>0;
+        } catch (SQLException ex) {
+            logger.error(Constants.ERROR_LOG_TEMPLATE, Constants.ERROR, ex.getClass().getSimpleName(), ex.getMessage());
+            return status;
+        }
+        return status;
+    }
+
+    public boolean updateUserPassword(int userId, String password){
+        String query="UPDATE users SET password=? WHERE user_id=? LIMIT 1";
+        boolean status=false;
+        String hashPassword=sha256Hasher.createHashText(password);
+
+        try(Connection connection= mysqlConnector.getConnection(); PreparedStatement preparedStatement=connection.prepareStatement(query)) {
+            preparedStatement.setString(1, hashPassword);
+            preparedStatement.setInt(2, userId);
+            status= preparedStatement.executeUpdate()>0;
+
+        } catch (SQLException ex) {
+            logger.error(Constants.ERROR_LOG_TEMPLATE, Constants.ERROR, ex.getClass().getSimpleName(), ex.getMessage());
+            return status;
+        }
+        return  status;
+    }
 }
